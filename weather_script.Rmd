@@ -1,12 +1,12 @@
 ---
-title: "weather_data_script"
+title: "Graphics for weather in MN and PA"
 author: "Hannah Phillips"
 date: "May 8, 2020"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(warning = F)
+knitr::opts_chunk$set(warning = F, message = F)
 
 library(readxl)
 library(tidyverse)
@@ -25,7 +25,7 @@ dat.MN <-
     "weather_data.xlsx", 
     sheet = "MN", 
     col_types = c("date", "numeric", "numeric", "numeric", "numeric")
-    ) %>%
+  ) %>%
   mutate(Location = "Minnesota")
 
 dat.PA <- 
@@ -33,7 +33,7 @@ dat.PA <-
     "weather_data.xlsx", 
     sheet = "PA", 
     col_types = c("date", "numeric", "numeric", "numeric", "numeric")
-    ) %>%
+  ) %>%
   mutate(Location = "Pennsylvania")
 
 dat <- 
@@ -68,53 +68,92 @@ dat.precip <- rbind(dat.rain, dat.snow)
 ```
 
 ```{r, echo = F}
+#temperature plot
 temp.plot <- 
   ggplot(dat, aes(Date, temp_avg, color = Location)) +
+  
   geom_point(alpha = 0.2, show.legend = F) +
+  
   geom_smooth(se = F) +
-  scale_color_npg()+
+  
+  scale_color_npg() +
+  
   theme_bw() +
+  
   labs(
     x = NULL, 
     y = "Average daily temperature, \u00B0C"
   ) +
+  
   theme(
     legend.position = c(.5, .2),
     legend.direction = "vertical",
     plot.margin = margin(6, 0, 6, 0)
   ) +
+  
   scale_x_date(
     date_labels = "%b-%y", 
     date_breaks = "3 months", 
     date_minor_breaks = "1 months",
-    expand = c(0.02,0.02)
+    expand = c(0.02, 0.02)
   ) 
 
-
+#precipitation plot
 precip.plot <- 
-  ggplot(dat.precip, aes(Date, precip_sum, color = Location, linetype = Type)) +
-  geom_point(alpha = 0.6, size = 2, show.legend = T, aes(shape = Type)) +
+  ggplot(
+    dat.precip, 
+    aes(Date, precip_sum, color = Location, linetype = Type)
+  ) +
+  
+  geom_point(
+    alpha = 0.6, 
+    size = 2, 
+    show.legend = T, 
+    aes(shape = Type)
+  ) +
+  
   geom_smooth(se = F) +
+  
   scale_color_npg(guide = F) +
+  
   theme_bw() +
+  
   labs(
     x = "Date, month-year", 
     y = "Average total monthly precipitation, mm"
   ) +
+  
   theme(
     legend.position = c(.5, .8),
     legend.direction = "vertical",
     plot.margin = margin(6, 0, 6, 0)
   ) +
+  
   scale_x_date(
     date_labels = "%b-%y", 
     date_breaks = "3 months", 
     date_minor_breaks = "1 months",
     expand = c(0.02,0.02)
   ) +
-  guides(lty = guide_legend(override.aes = list(col = 'darkgrey')))
+  
+  guides(
+    lty = guide_legend(override.aes = list(col = 'darkgrey'))
+  )
 
+#extract legends
+legend1 <- 
+  get_legend(
+    temp.plot + theme(legend.box.margin = margin(0, 0, 0, 12))
+  )
 
+legend2 <- 
+  get_legend(
+    precip.plot + theme(legend.box.margin = margin(0, 0, 0, 12))
+  )
+
+legend <- plot_grid(legend1, legend2, NULL, ncol = 1, align = "hv")
+
+#merge plots together
 plot <-
   cowplot::plot_grid(
     NULL,
@@ -127,20 +166,9 @@ plot <-
     rel_widths = c(.05, 1),
     align = "hv") 
 
-legend1 <- 
-  get_legend(
-    temp.plot + theme(legend.box.margin = margin(0, 0, 0, 12))
-  )
-
-legend2 <- 
-  get_legend(
-    precip.plot + theme(legend.box.margin = margin(0, 0, 0, 12))
-  )
-
-
-legend <- plot_grid(legend1, legend2, NULL, ncol = 1, align = "hv")
-
+#add legend
 plot_grid(plot, legend, rel_widths = c(3, .4), align = "hv") +
+  
   ggsave("weather_plot.png", width = 10, height = 7)
 ```
 
