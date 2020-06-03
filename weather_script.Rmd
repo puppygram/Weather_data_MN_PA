@@ -67,78 +67,101 @@ dat.snow <-
 dat.precip <- rbind(dat.rain, dat.snow)
 ```
 
+
 ```{r, echo = F}
 #temperature plot
-temp.plot <- 
-  ggplot(dat, aes(Date, temp_avg, color = Location)) +
-  
-  geom_point(alpha = 0.2, show.legend = F) +
-  
-  geom_smooth(se = F) +
-  
-  scale_color_npg() +
-  
-  theme_bw() +
-  
-  labs(
-    x = NULL, 
-    y = "Average daily temperature, \u00B0C"
-  ) +
-  
-  theme(
-    legend.position = c(.5, .2),
-    legend.direction = "vertical",
-    plot.margin = margin(6, 0, 6, 0)
-  ) +
-  
-  scale_x_date(
-    date_labels = "%b-%y", 
-    date_breaks = "3 months", 
-    date_minor_breaks = "1 months",
-    expand = c(0.02, 0.02)
-  ) 
+{
+  temp.plot <- 
+    ggplot(dat, aes(Date, temp_avg, color = Location)) +
+    
+    geom_point(alpha = 0.2, show.legend = F) +
+    
+    geom_smooth(se = F) +
+    
+    scale_color_npg() +
+    
+    theme_bw() +
+    
+    labs(
+      x = NULL, 
+      y = "Average daily temperature, \u00B0C"
+    ) +
+    
+    theme(
+      legend.position = c(.5, .2),
+      legend.direction = "vertical",
+      plot.margin = margin(6, 0, 6, 0)
+    ) +
+    
+    scale_x_date(
+      date_labels = "%b-%y", 
+      date_breaks = "3 months", 
+      date_minor_breaks = "1 months",
+      expand = c(0.02, 0.02)
+    ) +
+    
+    theme(
+      legend.key.width = unit(1, "cm"),
+      legend.text = element_text(size = rel(1)),
+      axis.text.y = element_text(size = rel(1)),
+      legend.title = element_text(size = 13)
+    )
+}
+
+
 
 #precipitation plot
-precip.plot <- 
-  ggplot(
-    dat.precip, 
-    aes(Date, precip_sum, color = Location, linetype = Type)
-  ) +
-  
-  geom_point(
-    alpha = 0.6, 
-    size = 2, 
-    show.legend = T, 
-    aes(shape = Type)
-  ) +
-  
-  geom_smooth(se = F) +
-  
-  scale_color_npg(guide = F) +
-  
-  theme_bw() +
-  
-  labs(
-    x = "Date, month-year", 
-    y = "Average total monthly precipitation, mm"
-  ) +
-  
-  theme(
-    legend.position = c(.5, .8),
-    legend.direction = "vertical",
-    plot.margin = margin(6, 0, 6, 0)
-  ) +
-  
-  scale_x_date(
-    date_labels = "%b-%y", 
-    date_breaks = "3 months", 
-    date_minor_breaks = "1 months",
-    expand = c(0.02,0.02)
-  ) +
-  
-  guides(
-    lty = guide_legend(override.aes = list(col = 'darkgrey'))
-  )
+{
+  precip.plot <- 
+    ggplot(
+      dat.precip, 
+      aes(Date, precip_sum, color = Location, linetype = Type)
+    ) +
+    
+    geom_point(
+      alpha = 0.6, 
+      size = 3, 
+      show.legend = T, 
+      aes(shape = Type)
+    ) +
+    
+    geom_smooth(se = F) +
+    
+    scale_color_npg(guide = F) +
+    
+    theme_bw() +
+    
+    labs(
+      x = "Date, month-year", 
+      y = "Average total monthly precipitation, mm"
+    ) +
+    
+    theme(
+      legend.position = c(.5, .8),
+      legend.direction = "vertical",
+      plot.margin = margin(6, 0, 6, 0)
+    ) +
+    
+    scale_x_date(
+      date_labels = "%b-%y", 
+      date_breaks = "3 months", 
+      date_minor_breaks = "1 months",
+      expand = c(0.02,0.02)
+    ) +
+    
+    guides(
+      lty = guide_legend(override.aes = list(col = 'darkgrey'))
+    ) +
+    
+    theme(
+      legend.key.width = unit(1.5, "cm"),
+      legend.text = element_text(size = rel(1)),
+      axis.text.y = element_text(size = rel(1)),
+      legend.title = element_text(size = 13)
+    ) 
+}
+
+
 
 #extract legends
 legend1 <- 
@@ -167,11 +190,8 @@ plot <-
     align = "hv") 
 
 #add legend
-plot_grid(plot, legend, rel_widths = c(3, .4), align = "hv") +
+plot_grid(plot, legend, rel_widths = c(3, .6), align = "hv") +
   
   ggsave("weather_plot.png", width = 10, height = 7)
 ```
-
-
-
 
